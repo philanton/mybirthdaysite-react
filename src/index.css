@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Rubik regular */
+@font-face {
+  font-family: "Rubik";
+  src: url("fonts/Rubik-Regular.woff2") format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Rubik medium italic */
+@font-face {
+  font-family: "Rubik";
+  src: url('fonts/Rubik-MediumItalic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Anton */
+@font-face {
+  font-family: "Anton";
+  src: url('fonts/Anton-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+@layer base {
+  body {
+      @apply bg-gradient-to-b from-indigo-300 via-yellow-200 to-yellow-200 
+      bg-no-repeat text-lg sm:text-3xl font-normal h-screen;
+      font-family: 'Rubik', sans-serif;
+  }
+
+  header {
+      @apply flex justify-between items-baseline z-30 top-0 absolute w-full;
+  }
+
+  h1, h2 {
+      font-family: 'Anton', sans-serif;
+      -webkit-text-stroke-width: 0.5px;
+      -webkit-text-stroke-color: white;
+  }
+
+  @media (min-width: 640px) {
+      h1, h2 {
+          -webkit-text-stroke-width: 2px;
+      }
+  }
+
+  h1 {
+      @apply text-3xl sm:text-7xl text-center ;
+  }
+
+  h2 {
+      @apply text-2xl sm:text-5xl;
+  }
+
+  input[type=text], input[type=email], input[type=number], input[type=password], select, textarea {
+      @apply block w-full placeholder-opacity-50
+      rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-1 sm:pl-2
+      focus:outline-none focus:shadow-lg bg-white border-yellow-400
+      text-lg sm:text-3xl border-2 sm:border-4 my-6 sm:my-12;
+  }
+
+  textarea {
+      @apply border-2 h-40 sm:h-80;
+  }
+
+  input[type=number]::-webkit-inner-spin-button {
+      @apply mr-2 sm:mr-4 h-8 sm:h-16;
+  }
+
+  select {
+      appearance: none;
+  }
+
+  label.lbl {
+      @apply block p-1 sm:p-2 my-6 sm:my-12;
+  }
+
+  label.lbl:after {
+      content: "\25A0";
+      @apply block border-white text-transparent
+      border-4 sm:border-8 rounded-xl sm:rounded-3xl h-2 sm:h-4;
+  }
+  
+  input[type=radio], input[type=checkbox] {
+      @apply hidden;
+  }
+
+  input[type=radio] + label, input[type=checkbox] + label {
+      @apply m-5 sm:m-10 ml-0 sm:ml-0;
+  }
+  
+  input[type=radio] + label:before, input[type=checkbox] + label:before {
+      content: "\25A0";
+      @apply border-yellow-400 bg-white inline-block 
+      text-transparent text-center align-top
+      w-4 sm:w-8 h-4 sm:h-8 border-2 sm:border-4
+      mr-1 sm:mr-2 mt-1 sm:mt-0
+      text-sm sm:text-3xl leading-3 sm:leading-5
+      focus:shadow-md;
+  }
+
+  input[type=radio] + label:before {
+      content: "\25CF";
+      @apply rounded-full;
+  }
+
+  input[type=radio]:checked + label:before, input[type=checkbox]:checked + label:before {
+      @apply text-black;
+  }
+
+  table {
+      @apply table-fixed border-collapse p-6 w-full;
+  }
+
+  th, td {
+      @apply p-2 bg-indigo-200 border-indigo-300 border-4 rounded-lg;
+  }
+}
+
+@layer components {
+  .emph {
+      @apply block font-medium italic text-center;
+  }
+
+  .btn {
+      @apply block rounded-md sm:rounded-xl font-medium text-center
+      py-2 sm:py-4 w-32 sm:w-64 hover:underline mx-7 sm:mx-14;
+  }
+
+  .btn-pr {
+      @apply bg-indigo-400 text-yellow-400;
+  }
+
+  .btn-sec {
+      @apply border-indigo-400 text-indigo-400 bg-opacity-0 border-2 sm:border-4;
+  }
+  
+  .btn-box {
+      @apply flex justify-center mt-12;
+  }
+
+  .content {
+      @apply my-20 sm:my-40 mx-8 sm:max-w-screen-lg sm:mx-auto;
+  }
+
+  .chunk {
+      @apply h-auto my-10 sm:my-20;
+  }
+
+  .paragraph {
+      @apply border-yellow-400 border-l-4 pl-1 sm:border-l-8 sm:pl-2 my-6 sm:my-12;
+  }
+
+  .ducky {
+      @apply block left-1/4 h-auto absolute z-0;
+  }
+
+  .sunrise {
+      @apply w-4/12 sm:w-3/12;
+  }
+
+  .sunset {
+      @apply top-28 sm:top-60 w-4/12 sm:w-2/12;
+  }
+
+  .desert {
+      @apply w-full h-auto bg-top bg-no-repeat absolute z-10;
+      background-size: 100% auto;
+  }
+
+  .desert-down {
+      background-image: url('img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 20%);
+      @apply top-40 sm:top-80;
+  }
+
+  .desert-up {
+      background-image: url('img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 5%);
+      @apply top-12 sm:top-24;
+  }
+
+  .image {
+      @apply border-4 border-indigo-400 rounded-md;
+  }
+
+  .menu {
+      @apply fixed z-20 bg-yellow-300 bg-opacity-90 h-screen w-screen 
+      flex items-center justify-center;
+  }
+
+  .menu-item {
+      @apply block w-48 sm:w-96 border-b-8 py-2 
+      border-indigo-400 hover:bg-indigo-200 hover:bg-opacity-70 
+      text-indigo-400 text-center text-2xl sm:text-5xl;
+  }
+  .menu-item:first-child {
+      @apply border-t-8;
+  }
+
+  .icon-m {
+      @apply w-8 sm:w-12 h-8 sm:h-12 m-2.5 sm:m-9 cursor-pointer;
+  }
+
+  .icon-s {
+      @apply w-6 sm:w-8 h-6 sm:h-8 m-3.5 sm:m-11 cursor-pointer;
+  }
+}
