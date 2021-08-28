@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React from "react";
 
 interface WeatherData {
   dt: number;
@@ -33,14 +33,21 @@ interface WholeWeatherData {
   hourly: WeatherDataFiltered[];
 }
 
-export default function WeatherTable() {
-  const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
-  const lat = '50.450001';
-  const lon = '30.523333';
-  const URI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-  const [weatherData, setWeatherData] = useState<WholeWeatherData>({} as WholeWeatherData);
+interface WeatherState {
+  weatherData: WholeWeatherData;
+}
 
-  useEffect(() => {
+export default class WeatherTable extends React.Component<{}, WeatherState> {
+  state: WeatherState = {
+    weatherData: {} as WholeWeatherData,
+  }
+
+  componentDidMount() {
+    const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+    const lat = '50.450001';
+    const lon = '30.523333';
+    const URI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+
     fetch(URI)
       .then(response => response.json())
       .then(data => {
@@ -53,98 +60,113 @@ export default function WeatherTable() {
           },
           hourly: hourly.slice(0, 24).map((data: WeatherData) => getWeatherDataFiltered(data))
         };
-        setWeatherData(weatherData);
+        this.setState({ weatherData });
       });
-  }, [URI])
-  
-  return Object.keys(weatherData).length === 0 ? null : (
-    <div className="desert desert-up">
-      <div className="content">
-        <h2>Weather Forecast</h2>
-        <CurrentWeather
-          sunrise={weatherData.current.sunrise}
-          sunset={weatherData.current.sunset}
-          other={weatherData.current.other}
-        />
-        <div className="overflow-x-scroll border-indigo-400 border-8 rounded-3xl">
-          <table>
-            <thead>
-              <tr>
-                <th className="w-16 sm:w-24">Hour</th>
-                <th className="w-12 sm:w-16"></th>
-                <th className="w-44 sm:w-64">Status</th>
-                <th className="w-52 sm:w-96">Temperature, C</th>
-                <th className="w-32 sm:w-48">Humidity, %</th>
-                <th className="w-36 sm:w-56">Pressure, hPa</th>
-              </tr>
-            </thead>
-            <tbody>
-              {weatherData.hourly.map((data: WeatherDataFiltered) => <WeatherForHour data={data} key={data.date.getHours()}/>)}
-            </tbody>
-          </table>
+  }
+
+  render() {
+    const weatherData = this.state.weatherData;
+
+    return (Object.keys(weatherData).length === 0) ?
+      null : (
+        <div className="desert desert-up">
+          <div className="content">
+            <h2>Weather Forecast</h2>
+            <CurrentWeather
+              sunrise={weatherData.current.sunrise}
+              sunset={weatherData.current.sunset}
+              other={weatherData.current.other}
+            />
+            <div className="overflow-x-scroll border-indigo-400 border-8 rounded-3xl">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="w-16 sm:w-24">Hour</th>
+                    <th className="w-12 sm:w-16"></th>
+                    <th className="w-44 sm:w-64">Status</th>
+                    <th className="w-52 sm:w-96">Temperature, C</th>
+                    <th className="w-32 sm:w-48">Humidity, %</th>
+                    <th className="w-36 sm:w-56">Pressure, hPa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weatherData.hourly.map((data: WeatherDataFiltered) => <WeatherForHour data={data} key={data.date.getHours()}/>)}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      );
+  }
 }
 
-function CurrentWeather(props: {
+interface CurrentWeatherProps {
   sunrise: Date;
   sunset: Date;
   other: WeatherDataFiltered;
-}) {
-  return (
-    <div className="chunk bg-indigo-200 rounded-3xl p-6">
-      <div className="flex flex-wrap justify-center items-center m-6">
-        <p className="w-30 sm:w-60">
-          {props.other.date.toDateString()}
-        </p>
-        <em className="emph p-4">
-          {props.other.weather_description}
-        </em>
-        <img
-          src={props.other.weather_icon_uri}
-          alt={props.other.weather_main}
-          className="block w-24"
-        />
-      </div>
-      <div className="paragraph bg-indigo-300 rounded-lg p-2 my-0 sm:my-0">
-        <p>
-          Sunrise at {props.sunrise.toTimeString().match(/\d\d:\d\d/)} and 
-          sunset at {props.sunset.toTimeString().match(/\d\d:\d\d/)}.
-        </p>
-        <p>
-          Temperature is {props.other.temp} C
-          and it feels like {props.other.feels_like} C.
-        </p>
-        <p>
-          Humidity: {props.other.humidity}%.
-        </p>
-        <p>
-          Pressure: {props.other.pressure}hPa.
-        </p>
-      </div>
-    </div>
-  );
 }
 
-function WeatherForHour(props: { data: WeatherDataFiltered }) {
-  const { data } = props;
-  return (
-    <tr>
-      <td className="text-right">{data.date.getHours()}</td>
-      <td>
-        <img
-          src={data.weather_icon_uri}
-          alt={data.weather_main}
-        />
-      </td>
-      <td>{data.weather_description}</td>
-      <td>{data.temp} (feels like {data.feels_like})</td>
-      <td>{data.humidity}</td>
-      <td>{data.pressure}</td>
-    </tr>
-  );
+class CurrentWeather extends React.Component<CurrentWeatherProps> {
+  render() {
+    return (
+      <div className="chunk bg-indigo-200 rounded-3xl p-6">
+        <div className="flex flex-wrap justify-center items-center m-6">
+          <p className="w-30 sm:w-60">
+            {this.props.other.date.toDateString()}
+          </p>
+          <em className="emph p-4">
+            {this.props.other.weather_description}
+          </em>
+          <img
+            src={this.props.other.weather_icon_uri}
+            alt={this.props.other.weather_main}
+            className="block w-24"
+          />
+        </div>
+        <div className="paragraph bg-indigo-300 rounded-lg p-2 my-0 sm:my-0">
+          <p>
+            Sunrise at {this.props.sunrise.toTimeString().match(/\d\d:\d\d/)} and 
+            sunset at {this.props.sunset.toTimeString().match(/\d\d:\d\d/)}.
+          </p>
+          <p>
+            Temperature is {this.props.other.temp} C
+            and it feels like {this.props.other.feels_like} C.
+          </p>
+          <p>
+            Humidity: {this.props.other.humidity}%.
+          </p>
+          <p>
+            Pressure: {this.props.other.pressure}hPa.
+          </p>
+        </div>
+      </div>
+    );
+  }
+}
+
+interface WeatherForHourProps {
+  data: WeatherDataFiltered;
+}
+
+class WeatherForHour extends React.Component<WeatherForHourProps> {
+  render() {
+    const { data } = this.props;
+    return (
+      <tr>
+        <td className="text-right">{data.date.getHours()}</td>
+        <td>
+          <img
+            src={data.weather_icon_uri}
+            alt={data.weather_main}
+          />
+        </td>
+        <td>{data.weather_description}</td>
+        <td>{data.temp} (feels like {data.feels_like})</td>
+        <td>{data.humidity}</td>
+        <td>{data.pressure}</td>
+      </tr>
+    );
+  }
 }
 
 function getWeatherDataFiltered(data: WeatherData): WeatherDataFiltered {

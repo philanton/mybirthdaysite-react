@@ -1,56 +1,78 @@
-import { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Header(props: {loggedIn: boolean}) {
-  const [menuOpened, setMenuOpened] = useState(false);
 
-  const handleClick: () => void = () => setMenuOpened(!menuOpened);
-
-  return (
-    <>
-      <header>
-        <Link to="/home" className={menuOpened ? "icon-s" : "icon-m"}>
-          <img
-            src={menuOpened ?
-              require("../img/ducky_logo_sec.png").default :
-              require("../img/ducky_logo.png").default
-            }
-            alt=""
-          />
-        </Link>
-        <h1>My birthday party</h1>
-        <img
-          src={menuOpened ?
-            require("../img/close.png").default :
-            require("../img/menu.png").default
-          }
-          className="icon-s"
-          alt=""
-          onClick={handleClick}
-        />
-      </header>
-      <Menu menuOpened={menuOpened} loggedIn={props.loggedIn} itemClickHandler={handleClick}/>
-    </>
-  );
+interface HeaderProps {
+  loggedIn: boolean;
 }
 
-function Menu(props: {
-  menuOpened: boolean,
-  loggedIn: boolean,
-  itemClickHandler: () => void
-}) {
-  return (
-    <div className={props.menuOpened ? "menu" : "hidden"}>
-      <div>
-        <Link to="/home" className="menu-item" onClick={props.itemClickHandler}>home</Link>
-        {!props.loggedIn ? (
-          <Link to="/login" className="menu-item" onClick={props.itemClickHandler}>log in</Link>
-        ) : (
-          <Link to="/forecast" className="menu-item" onClick={props.itemClickHandler}>weather</Link>
-        )}
-        <Link to="/survey" className="menu-item" onClick={props.itemClickHandler}>survey</Link>
-        <Link to="/history" className="menu-item" onClick={props.itemClickHandler}>history</Link>
+interface HeaderState {
+  menuOpened: boolean;
+}
+
+export default class Header extends React.Component<HeaderProps, HeaderState> {
+  state: HeaderState = {
+    menuOpened: false
+  }
+
+  handleClick() {
+    this.setState({ menuOpened: !this.state.menuOpened })
+  }
+
+  render() {
+    return (
+      <>
+        <header>
+          <Link to="/home" className={this.state.menuOpened ? "icon-s" : "icon-m"}>
+            <img
+              src={this.state.menuOpened ?
+                require("../img/ducky_logo_sec.png").default :
+                require("../img/ducky_logo.png").default
+              }
+              alt=""
+            />
+          </Link>
+          <h1>My birthday party</h1>
+          <img
+            src={this.state.menuOpened ?
+              require("../img/close.png").default :
+              require("../img/menu.png").default
+            }
+            className="icon-s"
+            alt=""
+            onClick={this.handleClick.bind(this)}
+          />
+        </header>
+        <Menu
+          menuOpened={this.state.menuOpened}
+          loggedIn={this.props.loggedIn}
+          itemClickHandler={this.handleClick.bind(this)}/>
+      </>
+    );
+  }
+}
+
+interface MenuProps {
+  menuOpened: boolean;
+  loggedIn: boolean;
+  itemClickHandler: () => void;
+}
+
+class Menu extends React.Component<MenuProps> {
+  render() {
+    return (
+      <div className={this.props.menuOpened ? "menu" : "hidden"}>
+        <div>
+          <Link to="/home" className="menu-item" onClick={this.props.itemClickHandler}>home</Link>
+          {!this.props.loggedIn ? (
+            <Link to="/login" className="menu-item" onClick={this.props.itemClickHandler}>log in</Link>
+          ) : (
+            <Link to="/forecast" className="menu-item" onClick={this.props.itemClickHandler}>weather</Link>
+          )}
+          <Link to="/survey" className="menu-item" onClick={this.props.itemClickHandler}>survey</Link>
+          <Link to="/history" className="menu-item" onClick={this.props.itemClickHandler}>history</Link>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
