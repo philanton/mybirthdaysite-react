@@ -1,4 +1,4 @@
-export default function HomeContent(props: {loggedIn: boolean}) {
+export default function Home(props: {loggedIn: boolean}) {
   return (
     <div className="desert desert-down">
       <em className="emph content">
@@ -8,5 +8,5 @@ export default function HomeContent(props: {loggedIn: boolean}) {
         }
       </em>
     </div>
-  );
+  )
 }

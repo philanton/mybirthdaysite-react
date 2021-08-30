@@ -1,8 +1,19 @@
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router'
+import { SyntheticEvent, useEffect, useState } from 'react';
 
 export default function SurveyContent() {
-  const history = useHistory();
-  const handleSubmit: () => void = () => history.push('/survey-home');
+  const router = useRouter();
+  const [submitted, setSubmitted] = useState(false);
+  const handleSubmit: (e: SyntheticEvent) => void = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  useEffect(() => {
+    if (submitted) {
+      router.replace('/survey-home');
+    }
+  }, [submitted])
 
   return (
     <div className="desert desert-up">

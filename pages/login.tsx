@@ -1,19 +1,18 @@
-import { ChangeEvent, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { ChangeEvent, SyntheticEvent, useState } from "react"
+import { useRouter } from "next/router"
 
-export default function LogInForm(props: { setLoggedIn: (value: boolean) => void }) {
-  const history = useHistory();
-  const [email, setEmail] = useState(localStorage.getItem('email') || "");
-  const [password, setPassword] = useState(localStorage.getItem('password') || "");
+export default function LogInForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
 
-  const handleSubmit = () => {
+  const handleSubmit: (e: SyntheticEvent) => void = (e) => {
     localStorage.setItem("email", email);
     localStorage.setItem("password", password);
-    props.setLoggedIn(true);
-    history.push('/home');
+    router.replace('/');
   }
 
   return (

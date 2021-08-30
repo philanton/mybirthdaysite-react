@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react'
+import Link from 'next/link'
 
 export default function WelcomeContent() {
   const [saidNo, setSaidNo] = useState(false);
@@ -29,7 +29,9 @@ export default function WelcomeContent() {
         <div className="btn-box">
           {!saidNo ? (
             <>
-              <Link to="/survey" className="btn btn-pr">Yes</Link>
+              <Link href="/survey">
+                <a className="btn btn-pr">Yes</a>
+              </Link>
               <button
                 className="btn btn-sec"
                 onClick={() => setSaidNo(true)}
@@ -38,7 +40,9 @@ export default function WelcomeContent() {
               </button>
             </>
           ) : (
-            <Link to="/history" className="btn btn-pr">Read</Link>
+            <Link href="/history">
+              <a className="btn btn-pr">Read</a>
+            </Link>
           )}
         </div>
       </div>
