@@ -137,8 +137,8 @@ export default function HistoryContent() {
             <em className="emph">Click button below, </em>
             <em className="emph">If after reading you want to go</em>
             <div className="btn-box">
-              <Link href="/login">
-                <a className="btn btn-pr">Register</a>
+              <Link href="/signup">
+                <a className="btn btn-pr">Go</a>
               </Link>
             </div>
           </div>

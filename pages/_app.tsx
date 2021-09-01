@@ -35,13 +35,16 @@ export default function MyApp({ Component, router, pageProps }) {
       name: 'log in',
     },
     {
+      path: '/signup',
+      wall_level: 0,
+      name: 'sign up',
+    },
+    {
       path: '/forecast',
       wall_level: 1,
       name: 'weather',
     }
   ]
-
-  const current_path = router.asPath;
 
   useEffect(() => {
     const _loggedIn = !!(localStorage.getItem('email') && localStorage.getItem('password'));
