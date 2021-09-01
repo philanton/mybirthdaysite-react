@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { PathFirewall } from '../pages/_app';
 
-export default function Header(props: {loggedIn: boolean}) {
+export default function Header(props: {menuPathes: PathFirewall[]}) {
   const [menuOpened, setMenuOpened] = useState(false);
 
   const handleClick: () => void = () => setMenuOpened(!menuOpened);
@@ -43,29 +44,19 @@ export default function Header(props: {loggedIn: boolean}) {
           />
         </div>
       </header>
-      <Menu menuOpened={menuOpened} loggedIn={props.loggedIn} itemClickHandler={handleClick}/>
-    </>
-  );
-}
-
-function Menu(props: {
-  menuOpened: boolean,
-  loggedIn: boolean,
-  itemClickHandler: () => void
-}) {
-  return (
-    <div className={props.menuOpened ? "menu" : "hidden"}>
-      <div>
-        <MenuItem path="/" name="home"  handleClick={props.itemClickHandler} />
-        {!props.loggedIn ? (
-          <MenuItem path="/login" name="log in"  handleClick={props.itemClickHandler} />
-        ) : (
-          <MenuItem path="/forecast" name="weather"  handleClick={props.itemClickHandler} />
-        )}
-          <MenuItem path="/survey" name="survey"  handleClick={props.itemClickHandler} />
-          <MenuItem path="/history" name="history"  handleClick={props.itemClickHandler} />
+      <div className={menuOpened ? "menu" : "hidden"}>
+        <div>
+          {props.menuPathes.map(data => (
+            <MenuItem
+              path={data.path}
+              name={data.name}
+              handleClick={handleClick}
+              key={data.path}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
