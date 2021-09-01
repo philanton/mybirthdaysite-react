@@ -176,7 +176,7 @@
 
   .desert-down {
       background-image: url('/img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 20%);
-      @apply top-40 sm:top-80;
+      @apply top-32 sm:top-60;
   }
 
   .desert-up {

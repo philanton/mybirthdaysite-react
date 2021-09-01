@@ -6,7 +6,7 @@ import Header from '../components/header'
 export interface PathFirewall {
   path: string;
   wall_level: 0 /* only public */ | 1 /* only private */ | -1 /* both */;
-  name?: string;
+  name: string;
 }
 
 export default function MyApp({ Component, router, pageProps }) {
@@ -15,22 +15,14 @@ export default function MyApp({ Component, router, pageProps }) {
 
   const pathFirewalls: PathFirewall[] = [
     {
-      path: '/welcome',
-      wall_level: -1,
-    },
-    {
       path: '/',
       wall_level: -1,
       name: 'home',
     },
     {
-      path: '/survey',
-      wall_level: -1,
-      name: 'survey',
-    },
-    {
-      path: '/survey-home',
-      wall_level: -1,
+      path: '/profile',
+      wall_level: 1,
+      name: 'profile',
     },
     {
       path: '/history',
@@ -50,7 +42,6 @@ export default function MyApp({ Component, router, pageProps }) {
   ]
 
   const current_path = router.asPath;
-  const withHeader = !(current_path === '/welcome' || current_path === '/survey-home');
 
   useEffect(() => {
     const _loggedIn = !!(localStorage.getItem('email') && localStorage.getItem('password'));
@@ -62,7 +53,7 @@ export default function MyApp({ Component, router, pageProps }) {
     }
 
     const _menuPathes: PathFirewall[] = pathFirewalls.filter(data => {
-      return data.wall_level !== +!_loggedIn && typeof data.name !== 'undefined'
+      return data.wall_level !== +!_loggedIn
     });
     setMenuPathes(_menuPathes);
   }, [router.asPath]);
@@ -73,7 +64,7 @@ export default function MyApp({ Component, router, pageProps }) {
         <title>My Birthday Party</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {withHeader && <Header menuPathes={menuPathes} />}
+      <Header menuPathes={menuPathes} />
       <Component {...pageProps} loggedIn={loggedIn}/>
     </>
   )

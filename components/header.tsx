@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { PathFirewall } from '../pages/_app';
+import { PathFirewall } from '../pages/_app'
 
 export default function Header(props: {menuPathes: PathFirewall[]}) {
+  const router = useRouter();
+  const isHomePage = router.asPath === '/';
   const [menuOpened, setMenuOpened] = useState(false);
 
   const handleClick: () => void = () => setMenuOpened(!menuOpened);
@@ -30,7 +33,11 @@ export default function Header(props: {menuPathes: PathFirewall[]}) {
             )}
           </a>
         </Link>
-        <h1>My birthday party</h1>
+        <h1>
+          {isHomePage ?
+            "Welcome to my Birthday Party" :
+            "My Birthday Party"}
+        </h1>
         <div className="icon-s">
           <Image
             src={menuOpened ?
