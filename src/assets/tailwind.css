@@ -5,7 +5,7 @@
 /* Rubik regular */
 @font-face {
   font-family: "Rubik";
-  src: url("fonts/Rubik-Regular.woff2") format('woff2');
+  src: url("../fonts/Rubik-Regular.woff2") format('woff2');
   font-weight: 400;
   font-style: normal;
 }
@@ -13,7 +13,7 @@
 /* Rubik medium italic */
 @font-face {
   font-family: "Rubik";
-  src: url('fonts/Rubik-MediumItalic.woff2') format('woff2');
+  src: url('../fonts/Rubik-MediumItalic.woff2') format('woff2');
   font-weight: 500;
   font-style: italic;
 }
@@ -21,7 +21,7 @@
 /* Anton */
 @font-face {
   font-family: "Anton";
-  src: url('fonts/Anton-Regular.woff2') format('woff2');
+  src: url('../fonts/Anton-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
 }
@@ -175,12 +175,12 @@
   }
 
   .desert-down {
-      background-image: url('img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 20%);
+      background-image: url('../img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 20%);
       @apply top-40 sm:top-80;
   }
 
   .desert-up {
-      background-image: url('img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 5%);
+      background-image: url('../img/desert.png'), linear-gradient(to bottom, transparent, #FDE68A 5%);
       @apply top-12 sm:top-24;
   }
 

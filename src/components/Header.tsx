@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import Menu from './Menu'
+import checkAuth from '../utils/checkAuth'
 
-export default function Header(props: {loggedIn: boolean}) {
+const Header: React.FC<{}> = props => {
   const [menuOpened, setMenuOpened] = useState(false);
 
-  const handleClick: () => void = () => setMenuOpened(!menuOpened);
+  const handleClick = useCallback(() => {
+    setMenuOpened(!menuOpened);
+  }, [menuOpened]);
 
   return (
     <>
@@ -29,28 +33,9 @@ export default function Header(props: {loggedIn: boolean}) {
           onClick={handleClick}
         />
       </header>
-      <Menu menuOpened={menuOpened} loggedIn={props.loggedIn} itemClickHandler={handleClick}/>
+      <Menu menuOpened={menuOpened} loggedIn={checkAuth()} itemClickHandler={handleClick}/>
     </>
   );
 }
 
-function Menu(props: {
-  menuOpened: boolean,
-  loggedIn: boolean,
-  itemClickHandler: () => void
-}) {
-  return (
-    <div className={props.menuOpened ? "menu" : "hidden"}>
-      <div>
-        <Link to="/home" className="menu-item" onClick={props.itemClickHandler}>home</Link>
-        {!props.loggedIn ? (
-          <Link to="/login" className="menu-item" onClick={props.itemClickHandler}>log in</Link>
-        ) : (
-          <Link to="/forecast" className="menu-item" onClick={props.itemClickHandler}>weather</Link>
-        )}
-        <Link to="/survey" className="menu-item" onClick={props.itemClickHandler}>survey</Link>
-        <Link to="/history" className="menu-item" onClick={props.itemClickHandler}>history</Link>
-      </div>
-    </div>
-  );
-}
+export default Header;
