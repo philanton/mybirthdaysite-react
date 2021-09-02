@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
+import { AppProps } from 'next/app'
 import Header from '../components/header'
 
 export interface PathFirewall {
@@ -9,7 +10,7 @@ export interface PathFirewall {
   name: string;
 }
 
-export default function MyApp({ Component, router, pageProps }) {
+export default function MyApp({ Component, router, pageProps }: AppProps) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuPathes, setMenuPathes] = useState([] as PathFirewall[]);
 

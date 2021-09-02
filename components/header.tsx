@@ -1,15 +1,22 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { PathFirewall } from '../pages/_app'
+import MenuItem from './menuItem'
 
-export default function Header(props: {menuPathes: PathFirewall[]}) {
+interface HeaderProps {
+  menuPathes: PathFirewall[];
+}
+
+export default function Header(props: HeaderProps) {
   const router = useRouter();
   const isHomePage = router.asPath === '/';
   const [menuOpened, setMenuOpened] = useState(false);
 
-  const handleClick: () => void = () => setMenuOpened(!menuOpened);
+  const handleClick = useCallback(() => {
+    setMenuOpened(!menuOpened);
+  }, [menuOpened]);
 
   return (
     <>
@@ -64,22 +71,5 @@ export default function Header(props: {menuPathes: PathFirewall[]}) {
         </div>
       </div>
     </>
-  );
-}
-
-function MenuItem(props: {
-  path: string,
-  name: string,
-  handleClick: () => void,
-}) {
-  return (
-    <Link href={props.path}>
-      <a
-        className="menu-item"
-        onClick={props.handleClick}
-      >
-        {props.name}
-      </a>
-    </Link>
   );
 }
