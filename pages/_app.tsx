@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { AppProps } from 'next/app'
 import Header from '../components/header'
+import goTrueClient from '../utils/auth'
+import { AuthChangeEvent, Session } from '@supabase/gotrue-js'
 
 export interface PathFirewall {
   path: string;
@@ -11,7 +13,7 @@ export interface PathFirewall {
 }
 
 export default function MyApp({ Component, router, pageProps }: AppProps) {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [session, setSession] = useState({} as Session);
   const [menuPathes, setMenuPathes] = useState([] as PathFirewall[]);
 
   const pathFirewalls: PathFirewall[] = [
@@ -45,22 +47,30 @@ export default function MyApp({ Component, router, pageProps }: AppProps) {
       wall_level: 1,
       name: 'weather',
     }
-  ]
+  ];
 
-  useEffect(() => {
-    const _loggedIn = !!(localStorage.getItem('email') && localStorage.getItem('password'));
-    setLoggedIn(_loggedIn);
-
+  function updatePathes(loggedIn: boolean) {
     const pathFirewall: PathFirewall = pathFirewalls.filter(data => data.path === router.asPath)[0];
-    if (!(pathFirewall.wall_level !== +!_loggedIn)) {
+    if (!pathFirewall || !(pathFirewall.wall_level !== +!loggedIn)) {
       router.replace('/');
     }
 
     const _menuPathes: PathFirewall[] = pathFirewalls.filter(data => {
-      return data.wall_level !== +!_loggedIn
+      return data.wall_level !== +!loggedIn
     });
     setMenuPathes(_menuPathes);
-  }, [router.asPath]);
+    
+  }
+
+  useEffect(() => {
+    setSession(goTrueClient.session());
+    updatePathes(!!goTrueClient.session());
+
+    goTrueClient.onAuthStateChange((_: AuthChangeEvent, _session: Session) => {
+      setSession(_session);
+      updatePathes(!!_session);
+    });
+  }, []);
 
   return (
     <>
@@ -69,7 +79,7 @@ export default function MyApp({ Component, router, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header menuPathes={menuPathes} />
-      <Component {...pageProps} loggedIn={loggedIn}/>
+      <Component {...pageProps} session={session}/>
     </>
   )
 }

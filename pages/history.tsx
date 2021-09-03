@@ -1,7 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { Session } from '@supabase/gotrue-js';
 
-export default function HistoryContent() {
+interface HistoryProps {
+  session: Session;
+}
+
+export default function HistoryContent({ session }: HistoryProps) {
   return (
     <div className="desert desert-up">
       <div className="content">
@@ -133,6 +138,7 @@ export default function HistoryContent() {
             />
           </div>
         </div>
+        {!session && (
           <div className="chunk">
             <em className="emph">Click button below, </em>
             <em className="emph">If after reading you want to go</em>
@@ -142,6 +148,7 @@ export default function HistoryContent() {
               </Link>
             </div>
           </div>
+        )}
         </div>
     </div>
   );

@@ -1,5 +1,8 @@
 module.exports = {
     images: {
-        domains: ["openweathermap.org"],
+        domains: [
+            "openweathermap.org",
+            "",
+        ],
     },
 }

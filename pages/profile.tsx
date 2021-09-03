@@ -1,155 +1,221 @@
-import { useRouter } from 'next/router'
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useState, useEffect } from 'react'
+import { Session } from '@supabase/gotrue-js'
+import supabase from '../utils/supabase'
+import Avatar from '../components/avatar'
+import useCheckbox from '../hooks/useCheckbox'
+import router from 'next/router'
 
-export default function SurveyContent() {
-  const router = useRouter();
-  const [submitted, setSubmitted] = useState(false);
-  const handleSubmit: (e: SyntheticEvent) => void = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
+interface SurveyProps {
+  session: Session;
+}
+
+export default function SurveyContent({ session }: SurveyProps) {
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [wishes, setWishes] = useState("");
+
+  const [beerOk, BeerCheckbox] = useCheckbox("beer");
+  const [vodkaOk, VodkaCheckbox] = useCheckbox("vodka");
+  const [whiskieOk, WhiskieCheckbox] = useCheckbox("whiskie");
+  const [wineOk, WineCheckbox] = useCheckbox("wine");
+  const [ginOk, GinCheckbox] = useCheckbox("gin");
 
   useEffect(() => {
-    if (submitted) {
-      router.replace('/survey-home');
+    getProfile();
+  }, [session]);
+
+  async function getProfile() {
+    try {
+      const user = supabase.auth.user();
+
+      const { data, error, status } = await supabase
+        .from('profiles')
+        .select(`first_name, last_name, phone, country, city, avatar_url`)
+        .eq('id', user.id)
+        .single()
+
+      if (error && status !== 406) {
+        throw error
+      }
+
+      if (data) {
+        setAvatarUrl(data.avatar_url);
+        setFirstName(data.first_name);
+        setLastName(data.last_name);
+        setPhone(data.phone);
+        setCountry(data.country);
+        setCity(data.city);
+      }
+    } catch (error) {
+      alert(error.message);
     }
-  }, [submitted])
+  }
+
+  async function updateProfile(url?: string) {
+    try {
+      const user = supabase.auth.user();
+
+      const { data } = await supabase
+        .from('profiles')
+        .select(`created_at`)
+        .eq('id', user.id)
+        .single();
+
+      const updates = {
+        id: user.id,
+        avatar_url: url || avatarUrl,
+        first_name: firstName,
+        last_name: lastName,
+        phone,
+        country,
+        city,
+        updated_at: new Date(),
+        created_at: !data ? new Date() : data.created_at,
+      }
+
+      const { error } = await supabase.from('profiles').upsert(updates, {
+        returning: 'minimal', 
+      });
+
+      if (error) {
+        throw error
+      } else {
+        router.replace('/profile');
+      }
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (/^\d{0,10}$/.test(e.target.value)) {
+      setPhone(e.target.value);
+    }
+  }
 
   return (
     <div className="desert desert-up">
       <div className="content">
-        <h2 id="title">Survey</h2>
+        <h2 id="title">Profile</h2>
         <div className="chunk" id="description">
           <p className="paragraph">
-            If you are here then you said “Yes” 
-            and then I want you to take survey below, 
-            so that your time won’t be wasted!
+            Fill fields below, so we will know you more
           </p>
-          <p className="paragraph">
-            Sometimes there are some optional input fields, but not this time.
-          </p>
-          <em className="emph">
-            Please fill in all input fields.
-          </em>
         </div>
-        <form id="survey-form" onSubmit={handleSubmit}>
-          <div className="chunk">
-            <label
-              className="lbl"
-              htmlFor="name"
-              id="name-label"
-            >
-              Your name:
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Anton"
-              required
+        <form id="survey-form" onSubmit={(e: SyntheticEvent) => {
+          e.preventDefault();
+          updateProfile();
+        }}>
+          <div className="chunk flex justify-center">
+            <Avatar
+              url={avatarUrl}
+              size={250}
+              onUpload={url => {
+                setAvatarUrl(url);
+                updateProfile(url);
+              }}
             />
           </div>
           <div className="chunk">
             <label
               className="lbl"
-              htmlFor="email"
-              id="email-label"
+              htmlFor="first_name"
             >
-              Your email:
+              First name:
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="myname@example.com"
-              required
+              type="text" id="first_name"
+              placeholder="Ivan"
+              onChange={e => setFirstName(e.target.value)}
+              value={firstName}
             />
           </div>
           <div className="chunk">
             <label
               className="lbl"
-              htmlFor="age"
-              id="number-label"
+              htmlFor="last_name"
             >
-              Your age:
+              Last name:
             </label>
             <input
-              type="number"
-              id="number"
-              name="age"
-              min="18"
-              max="30"
-              placeholder="18 - 30"
-              required
+              type="text" id="last_name"
+              placeholder="Ivanov"
+              onChange={e => setLastName(e.target.value)}
+              value={lastName}
             />
           </div>
           <div className="chunk">
-            <label className="lbl" htmlFor="">
-              Are you a drinker?
+            <label
+              className="lbl"
+              htmlFor="phone"
+            >
+              Phone number:
+            </label>
+            <input
+              type="text" id="phone"
+              placeholder="0987654321"
+              onChange={handlePhoneChange}
+              value={phone}
+            />
+          </div>
+          <div className="chunk">
+            <label
+              className="lbl"
+              htmlFor="country"
+            >
+              Country:
+            </label>
+            <input
+              type="text" id="country"
+              placeholder="Ukraine"
+              onChange={e => setCountry(e.target.value)}
+              value={country}
+            />
+          </div>
+          <div className="chunk">
+            <label
+              className="lbl"
+              htmlFor="city"
+            >
+              City:
+            </label>
+            <input
+              type="text"id="city"
+              placeholder="Kyiv"
+              onChange={e => setCity(e.target.value)}
+              value={city}
+            />
+          </div>
+          <div className="chunk">
+            <label className="lbl">
+              Favorite drinks:
             </label>
             <div className="flex flex-wrap">
-              <div>
-                <input type="radio" id="alco" name="alco" value="yes" checked />
-                <label htmlFor="alco">Yes</label>
-              </div>
-              <div>
-                <input type="radio" id="nalco" name="alco" value="no" />
-                <label htmlFor="nalco">No</label>
-              </div>
+                <BeerCheckbox />
+                <VodkaCheckbox />
+                <WhiskieCheckbox />
+                <WineCheckbox />
+                <GinCheckbox />       
             </div>
-          </div>
-          <div className="chunk">
-            <label className="lbl" htmlFor="">
-              What do you like to drink?
-            </label>
-            <div className="flex flex-wrap">
-                <div>
-                  <input type="checkbox" id="beer" name="beer" value="beer" />
-                  <label htmlFor="beer">Beer</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="vodka" name="vodka" value="vodka" />
-                  <label htmlFor="vodka">Vodka</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="whiskie" name="whiskie" value="whiskie" />
-                  <label htmlFor="whiskie">Whiskie</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="wine" name="wine" value="wine" />
-                  <label htmlFor="wine">Wine</label>
-                </div>
-                <div>
-                  <input type="checkbox" id="gin" name="gin" value="gin" />
-                  <label htmlFor="gin">Gin</label>
-                </div>
-            </div>
-          </div>
-          <div className="chunk">
-            <label className="lbl" htmlFor="live">
-              Where do you currently live?
-            </label>
-            <select name="live" id="dropdown" value="0">
-              <option value="0">Outskirts</option>
-              <option value="1">Center</option>
-              <option value="2">Left bank</option>
-              <option value="3">Right bank</option>
-            </select>
           </div>
           <div className="chunk">
             <label className="lbl" htmlFor="wishes">
-              Do you have any additional wishes?
+              What you want?
             </label>
             <textarea
-              name="wishes"
-              id="wishes"
               placeholder="Type something..."
-              required
+              id="wishes"
+              onChange={e => setWishes(e.target.value)}
+              value={wishes}
             ></textarea>
           </div>
           <div className="chunk">
             <button type="submit" className="btn btn-pr float-right">
-              Submit
+              Save
             </button>
           </div>
         </form>

@@ -1,17 +1,24 @@
 import { ChangeEvent, SyntheticEvent, useState } from "react"
 import { useRouter } from "next/router"
+import goTrueClient from "../utils/auth"
 
 export default function LogInForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
 
-  const handleSubmit: (e: SyntheticEvent) => void = (e) => {
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
+  const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    const { error } = await goTrueClient.signIn({email, password});
+    if (error) {
+      setErrorMessage(error.message);
+      return;
+    }
+    setErrorMessage("");
     router.replace('/');
   }
 
@@ -52,6 +59,13 @@ export default function LogInForm() {
               onChange={handlePasswordChange}
               required
             />
+          </div>
+          <div className="chunk">
+            {errorMessage && (
+              <ul className="requirements-list">
+                <li className="not-ok">{errorMessage}</li>
+              </ul>
+            )}
           </div>
           <div className="chunk">
             <button type="submit" className="btn btn-pr float-right">
